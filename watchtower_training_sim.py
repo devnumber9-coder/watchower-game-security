@@ -80,7 +80,7 @@ def run_level(level):
     wrap_print(f"Level complete. XP gained: {xp}")
     return xp
 
-# --- Content derived from your Watchtower PDF (Security+ only) ---
+# --- Content derived from your Watchtower PDF (Security+ Domains 1-2) ---
 
 levels = [
     {
@@ -334,6 +334,177 @@ levels = [
             {
                 "q": "What two factors define risk in basic terms?",
                 "a": "Likelihood and impact."
+            }
+        ]
+    },
+    {
+        "code": "2.1",
+        "title": "Secure Design Principles",
+        "story": (
+            "Reyes points to a blueprint of the Tower. 'A single crack in the base "
+            "brings down the crown,' he says. 'Build with the end of the world in mind.'"
+        ),
+        "field_notes": [
+            "Zero Trust: 'Never trust, always verify.' Assumes the network is already breached.",
+            "Least Privilege: Users get minimum access needed for their role.",
+            "Implicit Deny: If not explicitly allowed, it is denied.",
+            "Secure Defaults: Systems are secure 'out of the box' (e.g., default passwords disabled).",
+            "Defense-in-Depth: Layered security (e.g., firewall + MFA + encryption).",
+            "Fail Secure vs Fail Open: Secure stays locked; Open unlocks (safety vs security)."
+        ],
+        "knowledge_check_mcq": [
+            {
+                "q": "Which principle assumes that every user and device is a potential threat?",
+                "options": [
+                    "Least privilege",
+                    "Zero Trust",
+                    "Implicit deny",
+                    "Secure defaults"
+                ],
+                "answer_index": 1
+            },
+            {
+                "q": "A door lock that remains locked during a power failure is an example of:",
+                "options": [
+                    "Fail open",
+                    "Fail secure",
+                    "Defense-in-depth",
+                    "Zero trust"
+                ],
+                "answer_index": 1
+            }
+        ],
+        "flashcards": [
+            {
+                "q": "What is the core mantra of Zero Trust?",
+                "a": "Never trust, always verify."
+            },
+            {
+                "q": "Define 'Implicit Deny'.",
+                "a": "A principle where access is only granted if a rule specifically allows it; everything else is blocked."
+            }
+        ]
+    },
+    {
+        "code": "2.2",
+        "title": "Cloud and Virtualization Security",
+        "story": (
+            "The Tower exists in two places at once: the stone under Eli's feet "
+            "and the shimmering data in the Sky Vault. 'Protecting what you can't touch "
+            "is the hardest part,' Reyes whispers."
+        ),
+        "field_notes": [
+            "Cloud Models: IaaS (Infrastructure), PaaS (Platform), SaaS (Software).",
+            "Shared Responsibility: Provider secures the cloud; Customer secures data IN the cloud.",
+            "Virtualization: Hypervisors (Type 1 bare metal, Type 2 hosted).",
+            "Containerization: Microservices (e.g., Docker) sharing an OS kernel.",
+            "SDN (Software Defined Networking): Decoupling control plane from data plane."
+        ],
+        "knowledge_check_mcq": [
+            {
+                "q": "In which cloud model is the customer responsible for the most security?",
+                "options": [
+                    "SaaS",
+                    "PaaS",
+                    "IaaS",
+                    "Public Cloud"
+                ],
+                "answer_index": 2
+            }
+        ],
+        "flashcards": [
+            {
+                "q": "What is a Type 1 Hypervisor?",
+                "a": "A 'bare-metal' hypervisor that runs directly on the hardware."
+            },
+            {
+                "q": "What is the main difference between VM and Containers?",
+                "a": "VMs include a full OS; Containers share the host OS kernel and are lighter."
+            }
+        ]
+    },
+    {
+        "code": "3.1",
+        "title": "Security Monitoring and Response",
+        "story": (
+            "The Tower never sleeps. In the Watchtower’s core, thousands of blue "
+            "and red lights pulse. 'Detection is only the beginning,' Reyes says. "
+            "'A sentinel who only watches is just a witness. You must be the response.'"
+        ),
+        "field_notes": [
+            "Logging: Capturing events; SIEM (Security Information and Event Management) aggregates them.",
+            "SOAR: Security Orchestration, Automation, and Response; helps automate the IR lifecycle.",
+            "IR Lifecycle: Preparation -> Identification -> Containment -> Eradication -> Recovery -> Lessons Learned.",
+            "Evidence: Preservation of order of volatility (RAM first, then disk).",
+            "E-discovery: Locating and preserving electronic data for legal use."
+        ],
+        "knowledge_check_mcq": [
+            {
+                "q": "What is the first step in the Incident Response lifecycle?",
+                "options": [
+                    "Containment",
+                    "Preparation",
+                    "Identification",
+                    "Lessons Learned"
+                ],
+                "answer_index": 1
+            },
+            {
+                "q": "When collecting forensic evidence, which should be collected first?",
+                "options": [
+                    "Hard drive image",
+                    "CPU cache and RAM",
+                    "Network logs",
+                    "Optical media"
+                ],
+                "answer_index": 1
+            }
+        ],
+        "flashcards": [
+            {
+                "q": "What does SIEM stand for?",
+                "a": "Security Information and Event Management."
+            },
+            {
+                "q": "Define 'E-discovery'.",
+                "a": "The process of identifying and retrieving electronic information for use in legal proceedings."
+            }
+        ]
+    },
+    {
+        "code": "4.1",
+        "title": "Risk Management and Metrics",
+        "story": (
+            "Commander Reyes rolls out a map of the surrounding lands. 'Every path has a "
+            "predator,' he says. 'We cannot kill them all. We must decide which bites we "
+            "can survive and which we must avoid at all costs.'"
+        ),
+        "field_notes": [
+            "Risk Assessment: Qualitative (subjective) vs Quantitative (numeric/financial).",
+            "Quantitative terms: SLE (Single Loss Expectancy), ARO (Annual Rate of Occurrence), ALE (Annual Loss Expectancy). ALE = SLE * ARO.",
+            "Risk Treatment: Avoidance, Transference (insurance), Mitigation (controls), Acceptance.",
+            "Business Impact Analysis (BIA): RTO (Recovery Time Objective), RPO (Recovery Point Objective), MTD (Maximum Tolerable Downtime)."
+        ],
+        "knowledge_check_mcq": [
+            {
+                "q": "If a server cost $10,000 and the likelihood of failure is once every 5 years, what is the ALE?",
+                "options": [
+                    "$50,000",
+                    "$10,000",
+                    "$2,000",
+                    "$5,000"
+                ],
+                "answer_index": 2
+            }
+        ],
+        "flashcards": [
+            {
+                "q": "What is Risk Transference?",
+                "a": "Moving the risk to a third party, such as purchasing insurance or outsourcing a service."
+            },
+            {
+                "q": "Define RPO.",
+                "a": "Recovery Point Objective: The maximum amount of data loss (measured in time) an organization can tolerate."
             }
         ]
     }
