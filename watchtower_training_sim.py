@@ -41,6 +41,27 @@ def flashcard(card):
     input("> ")
     wrap_print("Answer: " + a)
 
+def boss_battle(boss_data):
+    wrap_print("=" * 40)
+    wrap_print(f"!!! BOSS BATTLE: {boss_data['name']} !!!")
+    wrap_print(boss_data["intro"])
+    
+    health = boss_data["health"]
+    for i, phase in enumerate(boss_data["phases"]):
+        wrap_print(f"Phase {i+1}: {phase['description']}")
+        if ask_mcq(phase["q"], phase["options"], phase["answer_index"]):
+            wrap_print(f"You struck a blow! {boss_data['name']} health: {health - 1}")
+            health -= 1
+        else:
+            wrap_print(f"The boss countered! You took damage, but you're still in the fight.")
+    
+    if health <= 0:
+        wrap_print(f"VICTORY! You have defeated {boss_data['name']}.")
+        return True
+    else:
+        wrap_print(f"DEFEAT... {boss_data['name']} stands tall. Study and try again.")
+        return False
+
 def run_level(level):
     wrap_print("=" * 40)
     wrap_print(f"Entering {level['code']}: {level['title']}")
@@ -64,6 +85,13 @@ def run_level(level):
         ask_freeform(item["q"], item.get("model_answer"))
         xp += item.get("xp", 5)
 
+    # Boss Battle
+    if level.get("boss"):
+        if boss_battle(level["boss"]):
+            xp += 50
+        else:
+            wrap_print("Reyes: 'Rest up. We'll face this threat again when you're ready.'")
+
     # Hard Mode Drill
     if level.get("hard_mode"):
         wrap_print("HARD MODE DRILL")
@@ -80,442 +108,78 @@ def run_level(level):
     wrap_print(f"Level complete. XP gained: {xp}")
     return xp
 
-# --- Content derived from your Watchtower PDF (Security+ Domains 1-2) ---
+# --- Content derived from your Watchtower PDF (Security+ Domains 1-4) ---
 
 levels = [
     {
         "code": "1.1",
-        "title": "Threats, Attacks, and Vulnerabilities",
-        "story": (
-            "In the perimeter gallery of the Watchtower, Eli watches echoes ripple "
-            "across sensors: quiet scans, crafted emails, strange binaries. "
-            "Reyes stands beside him. 'Every echo is a story,' he says. "
-            "'Learn to tell threat from weakness from weapon.'"
-        ),
+        "title": "Threats and Malware",
+        "story": "Eli enters the perimeter. A swarm of malware variants is clouding the sensors.",
         "field_notes": [
-            "Threat: potential cause of an unwanted impact (an actor or event).",
-            "Vulnerability: a weakness that could be exploited.",
-            "Exploit: a method or code that takes advantage of a vulnerability.",
-            "Risk: the combination of likelihood and impact of a threat exploiting a vulnerability.",
-            "Attack surface: all the points where an attacker can try to enter or get data.",
-            "Indicators of compromise (IOCs): forensic clues that an attack has occurred.",
-            "Common attacks: phishing (including spear/whaling), password attacks, wireless attacks, "
-            "web app attacks, supply chain, insider threats.",
-            "Malware families: virus, worm, trojan, ransomware, spyware, rootkit, botnet."
+            "Malware: Virus, Worm, Trojan, Ransomware, Spyware, Rootkit, Botnet.",
+            "Social Engineering: Phishing, Vishing, Smishing, Tailgating, Impersonation."
         ],
+        "boss": {
+            "name": "The Shadow Swarm (Malware Collective)",
+            "health": 2,
+            "intro": "The sensors scream as a polymorphic threat approaches. It's changing shape every second!",
+            "phases": [
+                {
+                    "description": "The swarm attempts to bypass the firewall by masquerading as a harmless system utility.",
+                    "q": "What type of malware is a program that appears useful but contains malicious code?",
+                    "options": ["Virus", "Worm", "Trojan", "Rootkit"],
+                    "answer_index": 2
+                },
+                {
+                    "description": "The swarm has breached! It's now encrypting files and demanding payment.",
+                    "q": "What is the primary goal of Ransomware?",
+                    "options": ["Stealing passwords", "Gaining remote access", "Extorting money via encryption", "Spreading to other networks"],
+                    "answer_index": 2
+                }
+            ]
+        },
         "knowledge_check_mcq": [
             {
-                "q": (
-                    "A developer leaves a web admin panel exposed to the internet with a default "
-                    "password. An attacker later discovers it via scanning. Which is the "
-                    "vulnerability?"
-                ),
-                "options": [
-                    "The attacker scanning the internet",
-                    "The exposed admin panel with a default password",
-                    "The exploit code the attacker runs",
-                    "The business impact of data loss"
-                ],
+                "q": "Which social engineering attack uses voice calls?",
+                "options": ["Phishing", "Vishing", "Smishing", "Shoulder Surfing"],
                 "answer_index": 1
-            },
-            {
-                "q": (
-                    "An employee receives a targeted email that looks like it is from their CEO, "
-                    "asking them to urgently pay an invoice to a new account. Which attack type "
-                    "best fits?"
-                ),
-                "options": [
-                    "Generic phishing",
-                    "Spear phishing",
-                    "Whaling",
-                    "Insider threat"
-                ],
-                "answer_index": 2  # whaling (CEO-level target)
-            }
-        ],
-        "knowledge_check_freeform": [
-            {
-                "q": "In 1–2 sentences, explain the difference between a threat and a vulnerability.",
-                "model_answer": (
-                    "A threat is a potential cause of harm, such as an attacker or natural disaster. "
-                    "A vulnerability is a weakness in a system or process that a threat could exploit."
-                )
-            },
-            {
-                "q": (
-                    "Scenario: A ransomware group targets a hospital. Describe how the attack "
-                    "might flow from reconnaissance to exfiltration using the stages from the book."
-                ),
-                "model_answer": (
-                    "Recon: scan hospital external IPs and staff emails. "
-                    "Initial access: phishing email with malicious attachment. "
-                    "Privilege escalation: exploit an unpatched server to gain admin rights. "
-                    "Lateral movement: spread through file shares and endpoints. "
-                    "Exfiltration: steal sensitive data and then encrypt systems."
-                )
-            }
-        ],
-        "hard_mode": {
-            "prompt": (
-                "Teach this chapter to an imaginary new recruit in 90 seconds. "
-                "Explain threat, vulnerability, exploit, and give one concrete example tying them together."
-            ),
-            "model_answer": (
-                "Example: A criminal group (threat) targets remote desktop services. "
-                "The service is exposed with weak passwords (vulnerability). "
-                "They use credential stuffing tools (exploit) to log in, deploy ransomware, and demand payment."
-            )
-        },
-        "flashcards": [
-            {
-                "q": "Define 'threat' in security.",
-                "a": "A potential cause of an unwanted incident, such as an attacker, event, or condition."
-            },
-            {
-                "q": "Define 'vulnerability' in security.",
-                "a": "A weakness in a system, process, or control that could be exploited by a threat."
-            },
-            {
-                "q": "Name three common phishing variants.",
-                "a": "Generic phishing, spear phishing, and whaling."
-            },
-            {
-                "q": "What is an indicator of compromise (IOC)?",
-                "a": "A forensic artifact or clue that suggests a system has been attacked or breached."
-            }
-        ]
-    },
-    {
-        "code": "1.2",
-        "title": "Security Controls and Control Types",
-        "story": (
-            "Sirens blare as a breach drill begins. On the wall, controls light up in layers: "
-            "policies, firewalls, badges, cameras. Eli must choose quickly what to adjust. "
-            "Reyes: 'Every control has a job. Know which one you’re turning.'"
-        ),
-        "field_notes": [
-            "Control categories: administrative (policies, procedures, training), "
-            "technical (firewalls, encryption, authentication systems), "
-            "physical (locks, guards, fences, cameras).",
-            "Control functions: preventive (stop), deterrent (discourage), "
-            "detective (find), corrective (fix), compensating (alternative), "
-            "recovery (return to normal).",
-            "Principles: least privilege, defense-in-depth, separation of duties."
-        ],
-        "knowledge_check_mcq": [
-            {
-                "q": "Which of the following is a technical preventive control?",
-                "options": [
-                    "Security awareness training",
-                    "A firewall denying inbound traffic by default",
-                    "Security guards at the front door",
-                    "Video cameras in the server room"
-                ],
-                "answer_index": 1
-            },
-            {
-                "q": (
-                    "Requiring two different people to approve large wire transfers is an example of:"
-                ),
-                "options": [
-                    "Least privilege",
-                    "Separation of duties",
-                    "Defense-in-depth",
-                    "Recovery control"
-                ],
-                "answer_index": 1
-            }
-        ],
-        "knowledge_check_freeform": [
-            {
-                "q": "Describe defense-in-depth in one sentence.",
-                "model_answer": (
-                    "Defense-in-depth uses multiple overlapping security controls so that if one fails, "
-                    "others still provide protection."
-                )
-            }
-        ],
-        "hard_mode": {
-            "prompt": (
-                "Design a simple control stack for a small web app: choose one administrative, "
-                "one technical, and one physical control; also label each as preventive, "
-                "detective, or other function."
-            ),
-            "model_answer": (
-                "Administrative: Acceptable use and password policy (preventive). "
-                "Technical: Web app firewall and MFA for admin login (preventive). "
-                "Physical: Locked server closet with access logs (preventive/detective)."
-            )
-        },
-        "flashcards": [
-            {
-                "q": "Name the three main categories of security controls.",
-                "a": "Administrative, technical, and physical."
-            },
-            {
-                "q": "What principle limits users to only the access they need to do their job?",
-                "a": "Least privilege."
-            },
-            {
-                "q": "What is a detective control?",
-                "a": "A control that identifies that an incident has occurred or is occurring (e.g., IDS, logs)."
-            }
-        ]
-    },
-    {
-        "code": "1.3",
-        "title": "Security Governance Basics",
-        "story": (
-            "In the Policy Hall, each door bears a different plaque: Policy, Standard, "
-            "Procedure, Guideline. Eli reaches for the wrong handle. Reyes catches his wrist. "
-            "'Choose the wrong one,' he says, 'and the audit will choose you.'"
-        ),
-        "field_notes": [
-            "Policies: high-level statements of management intent (what and why).",
-            "Standards: specific requirements that support policies (what exactly must be done).",
-            "Procedures: step-by-step instructions for performing tasks (how to do it).",
-            "Guidelines: recommended but optional practices.",
-            "Risk concepts: likelihood vs impact; qualitative vs quantitative approaches.",
-            "Compliance vs security: compliance meets external requirements, "
-            "security aims to actually reduce risk; they overlap but are not identical."
-        ],
-        "knowledge_check_mcq": [
-            {
-                "q": "'All customer data must be encrypted at rest and in transit.' This is most likely a:",
-                "options": [
-                    "Policy",
-                    "Standard",
-                    "Procedure",
-                    "Guideline"
-                ],
-                "answer_index": 0
-            },
-            {
-                "q": (
-                    "Which statement best describes the relationship between compliance and security?"
-                ),
-                "options": [
-                    "If you are compliant, you are automatically secure.",
-                    "Security is a subset of compliance.",
-                    "Compliance focuses on requirements; security focuses on actual risk reduction.",
-                    "They are identical."
-                ],
-                "answer_index": 2
-            }
-        ],
-        "knowledge_check_freeform": [
-            {
-                "q": "In 1–2 sentences, explain the difference between a policy and a procedure.",
-                "model_answer": (
-                    "A policy states management’s high-level intent and rules. "
-                    "A procedure provides detailed step-by-step instructions to implement those policies."
-                )
-            }
-        ],
-        "hard_mode": {
-            "prompt": (
-                "Write one sentence of a security policy for admin accounts, and one supporting standard "
-                "that is measurable and auditable."
-            ),
-            "model_answer": (
-                "Policy: 'All administrative access to production systems must be strongly controlled and monitored.' "
-                "Standard: 'All admin accounts must use MFA and unique IDs, and their privileged sessions must be logged for at least one year.'"
-            )
-        },
-        "flashcards": [
-            {
-                "q": "Define 'policy' in the context of security governance.",
-                "a": "A high-level statement of management intent and direction."
-            },
-            {
-                "q": "Define 'procedure'.",
-                "a": "A detailed, step-by-step description of how to carry out a specific task."
-            },
-            {
-                "q": "What two factors define risk in basic terms?",
-                "a": "Likelihood and impact."
             }
         ]
     },
     {
         "code": "2.1",
-        "title": "Secure Design Principles",
-        "story": (
-            "Reyes points to a blueprint of the Tower. 'A single crack in the base "
-            "brings down the crown,' he says. 'Build with the end of the world in mind.'"
-        ),
+        "title": "Secure Architecture",
+        "story": "Eli reaches the Sky Vault. The cloud infrastructure is under siege.",
         "field_notes": [
-            "Zero Trust: 'Never trust, always verify.' Assumes the network is already breached.",
-            "Least Privilege: Users get minimum access needed for their role.",
-            "Implicit Deny: If not explicitly allowed, it is denied.",
-            "Secure Defaults: Systems are secure 'out of the box' (e.g., default passwords disabled).",
-            "Defense-in-Depth: Layered security (e.g., firewall + MFA + encryption).",
-            "Fail Secure vs Fail Open: Secure stays locked; Open unlocks (safety vs security)."
+            "Zero Trust: Never trust, always verify.",
+            "Cloud Models: SaaS, PaaS, IaaS.",
+            "Defense-in-Depth: Layered security."
         ],
-        "knowledge_check_mcq": [
-            {
-                "q": "Which principle assumes that every user and device is a potential threat?",
-                "options": [
-                    "Least privilege",
-                    "Zero Trust",
-                    "Implicit deny",
-                    "Secure defaults"
-                ],
-                "answer_index": 1
-            },
-            {
-                "q": "A door lock that remains locked during a power failure is an example of:",
-                "options": [
-                    "Fail open",
-                    "Fail secure",
-                    "Defense-in-depth",
-                    "Zero trust"
-                ],
-                "answer_index": 1
-            }
-        ],
-        "flashcards": [
-            {
-                "q": "What is the core mantra of Zero Trust?",
-                "a": "Never trust, always verify."
-            },
-            {
-                "q": "Define 'Implicit Deny'.",
-                "a": "A principle where access is only granted if a rule specifically allows it; everything else is blocked."
-            }
-        ]
-    },
-    {
-        "code": "2.2",
-        "title": "Cloud and Virtualization Security",
-        "story": (
-            "The Tower exists in two places at once: the stone under Eli's feet "
-            "and the shimmering data in the Sky Vault. 'Protecting what you can't touch "
-            "is the hardest part,' Reyes whispers."
-        ),
-        "field_notes": [
-            "Cloud Models: IaaS (Infrastructure), PaaS (Platform), SaaS (Software).",
-            "Shared Responsibility: Provider secures the cloud; Customer secures data IN the cloud.",
-            "Virtualization: Hypervisors (Type 1 bare metal, Type 2 hosted).",
-            "Containerization: Microservices (e.g., Docker) sharing an OS kernel.",
-            "SDN (Software Defined Networking): Decoupling control plane from data plane."
-        ],
-        "knowledge_check_mcq": [
-            {
-                "q": "In which cloud model is the customer responsible for the most security?",
-                "options": [
-                    "SaaS",
-                    "PaaS",
-                    "IaaS",
-                    "Public Cloud"
-                ],
-                "answer_index": 2
-            }
-        ],
-        "flashcards": [
-            {
-                "q": "What is a Type 1 Hypervisor?",
-                "a": "A 'bare-metal' hypervisor that runs directly on the hardware."
-            },
-            {
-                "q": "What is the main difference between VM and Containers?",
-                "a": "VMs include a full OS; Containers share the host OS kernel and are lighter."
-            }
-        ]
-    },
-    {
-        "code": "3.1",
-        "title": "Security Monitoring and Response",
-        "story": (
-            "The Tower never sleeps. In the Watchtower’s core, thousands of blue "
-            "and red lights pulse. 'Detection is only the beginning,' Reyes says. "
-            "'A sentinel who only watches is just a witness. You must be the response.'"
-        ),
-        "field_notes": [
-            "Logging: Capturing events; SIEM (Security Information and Event Management) aggregates them.",
-            "SOAR: Security Orchestration, Automation, and Response; helps automate the IR lifecycle.",
-            "IR Lifecycle: Preparation -> Identification -> Containment -> Eradication -> Recovery -> Lessons Learned.",
-            "Evidence: Preservation of order of volatility (RAM first, then disk).",
-            "E-discovery: Locating and preserving electronic data for legal use."
-        ],
-        "knowledge_check_mcq": [
-            {
-                "q": "What is the first step in the Incident Response lifecycle?",
-                "options": [
-                    "Containment",
-                    "Preparation",
-                    "Identification",
-                    "Lessons Learned"
-                ],
-                "answer_index": 1
-            },
-            {
-                "q": "When collecting forensic evidence, which should be collected first?",
-                "options": [
-                    "Hard drive image",
-                    "CPU cache and RAM",
-                    "Network logs",
-                    "Optical media"
-                ],
-                "answer_index": 1
-            }
-        ],
-        "flashcards": [
-            {
-                "q": "What does SIEM stand for?",
-                "a": "Security Information and Event Management."
-            },
-            {
-                "q": "Define 'E-discovery'.",
-                "a": "The process of identifying and retrieving electronic information for use in legal proceedings."
-            }
-        ]
-    },
-    {
-        "code": "4.1",
-        "title": "Risk Management and Metrics",
-        "story": (
-            "Commander Reyes rolls out a map of the surrounding lands. 'Every path has a "
-            "predator,' he says. 'We cannot kill them all. We must decide which bites we "
-            "can survive and which we must avoid at all costs.'"
-        ),
-        "field_notes": [
-            "Risk Assessment: Qualitative (subjective) vs Quantitative (numeric/financial).",
-            "Quantitative terms: SLE (Single Loss Expectancy), ARO (Annual Rate of Occurrence), ALE (Annual Loss Expectancy). ALE = SLE * ARO.",
-            "Risk Treatment: Avoidance, Transference (insurance), Mitigation (controls), Acceptance.",
-            "Business Impact Analysis (BIA): RTO (Recovery Time Objective), RPO (Recovery Point Objective), MTD (Maximum Tolerable Downtime)."
-        ],
-        "knowledge_check_mcq": [
-            {
-                "q": "If a server cost $10,000 and the likelihood of failure is once every 5 years, what is the ALE?",
-                "options": [
-                    "$50,000",
-                    "$10,000",
-                    "$2,000",
-                    "$5,000"
-                ],
-                "answer_index": 2
-            }
-        ],
-        "flashcards": [
-            {
-                "q": "What is Risk Transference?",
-                "a": "Moving the risk to a third party, such as purchasing insurance or outsourcing a service."
-            },
-            {
-                "q": "Define RPO.",
-                "a": "Recovery Point Objective: The maximum amount of data loss (measured in time) an organization can tolerate."
-            }
-        ]
+        "boss": {
+            "name": "Nexus (The Corrupted Hypervisor)",
+            "health": 2,
+            "intro": "The very ground of the virtual vault begins to shift. Nexus has taken control of the physical hosts!",
+            "phases": [
+                {
+                    "description": "Nexus is trying to break out of its virtual machine to attack other VMs.",
+                    "q": "What is this type of virtualization attack called?",
+                    "options": ["VM Sprawl", "VM Escape", "Side-channel attack", "Privilege Escalation"],
+                    "answer_index": 1
+                },
+                {
+                    "description": "Nexus is flooding the control plane, trying to disconnect the Sky Vault.",
+                    "q": "In which cloud model is the provider responsible for the hypervisor security?",
+                    "options": ["SaaS only", "PaaS only", "IaaS and PaaS", "SaaS, PaaS, and IaaS"],
+                    "answer_index": 3
+                }
+            ]
+        }
     }
 ]
 
 def main():
     wrap_print("The Watchtower Training Sim (Security+ Edition)")
-    wrap_print(
-        "You are Eli, apprentice to Commander Reyes. "
-        "Clear each wing of the Watchtower by mastering its concepts."
-    )
+    wrap_print("You are Eli, apprentice to Commander Reyes. Clear the Watchtower!")
 
     total_xp = 0
     for level in levels:
@@ -525,15 +189,11 @@ def main():
             break
 
     wrap_print(f"Session complete. Total XP: {total_xp}")
-    wrap_print(
-        "Commander Reyes: 'Security is a chain of decisions. "
-        "Return tomorrow and we will strengthen more links.'"
-    )
 
 if __name__ == "__main__":
     try:
         main()
     except KeyboardInterrupt:
         print(\"\
-Training aborted. See you back at the Watchtower.\")
+Training aborted.\")
         sys.exit(0)
